@@ -14,8 +14,8 @@
             --font-display: 'Space Grotesk', sans-serif;
         }
         body {
-            background-color: #050505;
-            color: #cbd5e1;
+            background-color: #0f172a;
+            color: #f8fafc;
             font-family: var(--font-sans);
             overflow-x: hidden;
         }
@@ -25,7 +25,7 @@
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
@@ -96,10 +96,35 @@
             Clock = createFallbackIcon('Clock'), 
             Flame = createFallbackIcon('Flame'), 
             Star = createFallbackIcon('Star'), 
-            Check = createFallbackIcon('Check')
+            Check = createFallbackIcon('Check'),
+            CreditCard = createFallbackIcon('CreditCard')
         } = LucideGlobal;
 
         // --- Shared Components ---
+
+        const Header = ({ setStep }) => (
+            <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10 shadow-xl">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setStep(0)}>
+                            <Zap className="w-6 h-6 text-blue-500" />
+                            <span className="font-display font-bold text-white text-xl tracking-tight">AI MASTERY</span>
+                        </div>
+                        <nav className="hidden md:flex items-center space-x-8">
+                            <button onClick={() => setStep(0)} className="text-white/70 hover:text-white font-medium transition-colors">Home</button>
+                            <button onClick={() => setStep(6)} className="text-white/70 hover:text-white font-medium transition-colors">Learn More</button>
+                            <button onClick={() => setStep(3)} className="text-white/70 hover:text-white font-medium transition-colors">Get Prices</button>
+                            <button onClick={() => setStep(2)} className="bg-blue-600 text-white px-5 py-2 rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20">Sign Up</button>
+                        </nav>
+                        <div className="md:hidden">
+                            <button className="text-white p-2">
+                                <LayoutDashboard className="w-6 h-6" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        );
 
         const BookMockup = () => (
             <div className="relative group mx-auto w-64 h-80 perspective-1000 my-12">
@@ -109,35 +134,35 @@
                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                     className="relative w-full h-full preserve-3d shadow-2xl rounded-r-lg overflow-hidden border border-white/10"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-blue-900 flex flex-col items-center justify-center p-6 text-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 flex flex-col items-center justify-center p-6 text-center">
                         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-                        <Zap className="w-12 h-12 text-blue-400 mb-4 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
+                        <Zap className="w-12 h-12 text-blue-300 mb-4 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
                         <h3 className="text-2xl font-display font-black text-white leading-tight tracking-tighter">
                             72-HOUR AI BUSINESS MASTERY
                         </h3>
-                        <div className="mt-4 px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold text-blue-300 uppercase tracking-widest">
+                        <div className="mt-4 px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold text-blue-200 uppercase tracking-widest">
                             The Challenge
                         </div>
                     </div>
                     <div className="absolute left-0 top-0 bottom-0 w-4 bg-black/40 border-r border-white/10"></div>
                 </motion.div>
                 <div className="absolute -inset-8 bg-blue-500/20 blur-[100px] rounded-full -z-10"></div>
-                <div className="absolute -inset-8 bg-purple-500/10 blur-[80px] rounded-full -z-10 translate-x-10"></div>
             </div>
         );
 
-        const GlowButton = ({ children, onClick, className = "", variant = "primary" }) => {
+        const GlowButton = ({ children, onClick, className = "", variant = "primary", disabled = false }) => {
             const variants = {
-                primary: "bg-blue-600 text-white shadow-[0_0_30px_rgba(37,99,235,0.4)] hover:bg-blue-500",
-                secondary: "bg-white text-black hover:bg-slate-100",
-                outline: "bg-white/5 border border-white/10 text-white hover:bg-white/10"
+                primary: "bg-blue-600 text-white shadow-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed",
+                secondary: "bg-slate-800 text-white hover:bg-slate-700 disabled:opacity-50",
+                outline: "bg-transparent border border-white/20 text-white hover:bg-white/5 disabled:opacity-50"
             };
 
             return (
                 <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={!disabled ? { scale: 1.02 } : {}}
+                    whileTap={!disabled ? { scale: 0.98 } : {}}
                     onClick={onClick}
+                    disabled={disabled}
                     className={`w-full font-bold py-5 rounded-2xl flex items-center justify-center gap-3 transition-all ${variants[variant]} ${className}`}
                 >
                     {children}
@@ -148,154 +173,71 @@
         // --- Funnel Steps ---
 
         const LandingPage = ({ onNext }) => (
-            <div className="px-6 py-12 max-w-lg mx-auto">
-                <div className="text-center mb-16">
-                    <motion.h2 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-blue-500 font-black tracking-[0.4em] uppercase text-xs mb-6"
-                    >
-                        STOP SCROLLING.
-                    </motion.h2>
-                    <h1 className="text-4xl font-display font-bold text-white leading-tight mb-8">
-                        If you're always busy but still broke… <br/>
-                        <span className="text-white/40">you're not lazy.</span> <br/>
-                        <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">You're using the wrong system.</span>
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 max-w-lg mx-auto">
+                <div className="text-center mb-12">
+                    <div className="inline-block px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-8">
+                        The 72-Hour Challenge
+                    </div>
+                    <h1 className="text-5xl font-display font-black text-white mb-6 leading-[0.9] tracking-tighter">
+                        I BUILT A BUSINESS <br/>
+                        <span className="text-blue-500">IN 3 DAYS.</span>
                     </h1>
                     <p className="text-slate-400 text-lg mb-10 leading-relaxed">
                         I discovered something that changed everything using just my phone.
                     </p>
-                    <GlowButton onClick={onNext}>
-                        Get Instant Access
-                        <ArrowRight className="w-5 h-5" />
-                    </GlowButton>
                 </div>
+
+                <BookMockup />
 
                 <div className="space-y-8 mb-20 text-center">
-                    <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-                        <p className="text-slate-300 leading-relaxed mb-6">
-                            "I was busy every day. Trying different things. Learning… but not earning."
-                        </p>
-                        <p className="text-slate-400 text-sm mb-6">
-                            I thought I was the problem.
-                        </p>
-                        <p className="text-white font-bold">
-                            Until I realized… I was just doing the wrong things.
-                        </p>
+                    <div className="flex items-center justify-center gap-12">
+                        <div>
+                            <p className="text-3xl font-black text-white">5k+</p>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Students</p>
+                        </div>
+                        <div className="w-px h-10 bg-white/10"></div>
+                        <div>
+                            <p className="text-3xl font-black text-white">72h</p>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="mb-20">
-                    <h3 className="text-2xl font-bold text-white mb-8 text-center">You're Not Lazy… You're Stuck in a Loop.</h3>
-                    <div className="space-y-4">
-                        {[
-                            { icon: <Clock className="w-5 h-5 text-red-400" />, text: "You wake up with plans" },
-                            { icon: <Zap className="w-5 h-5 text-red-400" />, text: "Day ends with no results" },
-                            { icon: <MessageSquare className="w-5 h-5 text-red-400" />, text: "Internal doubt: \"Am I the problem?\"" }
-                        ].map((item, i) => (
-                            <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/5">
-                                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
-                                    {item.icon}
-                                </div>
-                                <p className="text-slate-300 text-sm">{item.text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mb-20 text-center px-4">
-                    <div className="w-px h-12 bg-gradient-to-b from-transparent to-blue-500 mx-auto mb-8"></div>
-                    <p className="text-xl text-white font-medium leading-relaxed italic">
-                        "Hard work is not your problem. Consistency is not your problem. It’s your approach."
-                    </p>
-                    <div className="w-px h-12 bg-gradient-to-t from-transparent to-blue-500 mx-auto mt-8"></div>
-                </div>
-
-                <div className="mb-20">
-                    <div className="space-y-6 text-slate-400 text-center leading-relaxed">
-                        <p>I was doing everything… learning, jumping from one thing to another, buying courses.</p>
-                        <p className="text-white font-bold">Still nothing worked…</p>
-                        <p>Until I found a simple way to turn what I already had into something people would actually pay for.</p>
-                        <p className="text-blue-400 font-bold text-lg">Using just my phone. No laptop. No stress. No confusion.</p>
-                    </div>
-                </div>
-
-                <div className="mb-20 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-6">
-                        The Solution
-                    </div>
-                    <h2 className="text-3xl font-display font-bold text-white mb-4">72-Hour AI Business Mastery Challenge</h2>
-                    <p className="text-slate-400">A simple, step-by-step system to go from zero to launch.</p>
-                    
-                    <BookMockup />
-
-                    <div className="space-y-4 text-left max-w-xs mx-auto">
-                        {[
-                            "Turn simple ideas into income",
-                            "Use free AI tools (no stress)",
-                            "Follow a clear step-by-step system",
-                            "Launch using just your phone"
-                        ].map((benefit, i) => (
-                            <div key={i} className="flex items-center gap-3 text-slate-300 text-sm">
-                                <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
-                                {benefit}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mb-20">
-                    <h3 className="text-xl font-bold text-white mb-8 text-center">Who It’s For</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        {[
-                            "Tired of trying without results",
-                            "Only have a phone",
-                            "Want something simple",
-                            "Ready to take action"
-                        ].map((item, i) => (
-                            <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                <p className="text-slate-400 text-sm">{item}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mb-12 text-center p-8 rounded-3xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-white/10">
-                    <p className="text-white leading-relaxed">
-                        "6 months from now… you’ll either say: <br/>
-                        <span className="text-blue-400 font-bold">‘I’m glad I started’</span> <br/>
-                        or wish you did."
-                    </p>
-                </div>
-
-                <GlowButton onClick={onNext} variant="secondary">
-                    Start Now
+                <GlowButton onClick={() => window.location.href = 'https://wa.link/uz3629'}>
+                    Get started now
+                    <ArrowRight className="w-5 h-5" />
                 </GlowButton>
             </div>
         );
 
         const ConfirmationPage = ({ onNext }) => (
-            <div className="px-6 py-20 text-center max-w-lg mx-auto">
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-                    <div className="w-20 h-20 bg-blue-600/20 rounded-3xl flex items-center justify-center mx-auto mb-10 border border-blue-500/30">
-                        <ShieldCheck className="w-10 h-10 text-blue-400" />
-                    </div>
-                    <h1 className="text-3xl font-display font-bold text-white mb-4">You're One Step Away…</h1>
-                    <p className="text-slate-400 mb-12">This is where most people stop… don’t miss this.</p>
-                    
-                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 mb-12">
-                        <p className="text-white font-bold mb-8">Click below to continue and create your access.</p>
-                        <GlowButton onClick={onNext}>
-                            Continue
-                        </GlowButton>
-                    </div>
-
-                    <p className="text-xs text-slate-500 font-medium flex items-center justify-center gap-2">
-                        <Lock className="w-3 h-3" />
-                        Quick setup. Instant access. No complications.
-                    </p>
-                </motion.div>
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 max-w-lg mx-auto">
+                <div className="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mb-10 border border-blue-500/20">
+                    <CheckCircle2 className="w-10 h-10 text-blue-500" />
+                </div>
+                <h2 className="text-4xl font-display font-bold text-white mb-6 text-center leading-tight">
+                    Wait! Are you ready for the truth?
+                </h2>
+                <p className="text-slate-400 text-center text-lg mb-12 leading-relaxed">
+                    Most people fail because they follow old advice. I'm about to show you the new way.
+                </p>
+                <div className="w-full space-y-4 mb-12">
+                    {[
+                        "No expensive laptop needed",
+                        "No previous experience required",
+                        "Start with $0 upfront"
+                    ].map((text, i) => (
+                        <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-slate-900/50 border border-white/5">
+                            <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                                <Check className="w-4 h-4 text-white" />
+                            </div>
+                            <span className="text-slate-300 font-medium">{text}</span>
+                        </div>
+                    ))}
+                </div>
+                <GlowButton onClick={onNext}>
+                    Yes, Show Me The System
+                </GlowButton>
             </div>
         );
 
@@ -311,13 +253,13 @@
                         exit={{ opacity: 0, x: -20 }}
                     >
                         <div className="text-center mb-12">
-                            <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/30">
-                                <User className="w-8 h-8 text-blue-400" />
+                            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                                <User className="w-8 h-8 text-blue-500" />
                             </div>
                             <h1 className="text-3xl font-display font-bold text-white mb-2">
                                 {isLogin ? 'Log In' : 'Create Your Account'}
                             </h1>
-                            <p className="text-slate-500 text-sm">
+                            <p className="text-slate-400 text-sm">
                                 {isLogin ? 'Welcome back to the challenge.' : 'Secure. No spam. Immediate access after signup.'}
                             </p>
                         </div>
@@ -325,20 +267,20 @@
                         <div className="space-y-4">
                             {!isLogin && (
                                 <div className="relative">
-                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
-                                    <input type="text" placeholder="Full Name" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white focus:outline-none focus:border-blue-500/50" />
+                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                    <input type="text" placeholder="Full Name" className="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500" />
                                 </div>
                             )}
                             <div className="relative">
-                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
-                                <input type="email" placeholder="Email Address" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white focus:outline-none focus:border-blue-500/50" />
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <input type="email" placeholder="Email Address" className="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500" />
                             </div>
                             <div className="relative">
-                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
-                                <input type="password" placeholder="Password" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white focus:outline-none focus:border-blue-500/50" />
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <input type="password" placeholder="Password" className="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500" />
                             </div>
                             <GlowButton onClick={onNext} className="mt-4">
-                                {isLogin ? 'Log In' : 'Get Instant Access'}
+                                {isLogin ? 'Log In' : 'Sign Up'}
                             </GlowButton>
                             
                             <div className="text-center mt-8">
@@ -347,7 +289,7 @@
                                     className="text-xs text-slate-500"
                                 >
                                     {isLogin ? "Don't have an account? " : "Already have an account? "}
-                                    <span className="text-blue-400 font-bold underline">
+                                    <span className="text-blue-500 font-bold underline">
                                         {isLogin ? 'Sign Up' : 'Log In'}
                                     </span>
                                 </button>
@@ -359,7 +301,7 @@
         };
 
         const DashboardPreview = ({ onNext }) => (
-            <div className="min-h-screen bg-[#050505] p-6 max-w-lg mx-auto">
+            <div className="min-h-screen p-6 max-w-lg mx-auto">
                 <div className="flex items-center justify-between mb-10">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -367,54 +309,143 @@
                         </div>
                         <span className="font-bold text-white tracking-tight">AI MASTERY</span>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-white/50" />
+                    <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center">
+                        <User className="w-5 h-5 text-slate-400" />
                     </div>
                 </div>
 
                 <div className="mb-10">
-                    <h2 className="text-2xl font-bold text-white mb-2">Welcome to AI Business Mastery</h2>
-                    <p className="text-slate-500 text-sm">Your journey to launch starts here.</p>
-                </div>
-
-                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 mb-8">
-                    <div className="flex justify-between items-end mb-4">
-                        <div>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Course Progress</p>
-                            <h3 className="text-2xl font-bold text-white">20% Complete</h3>
-                        </div>
-                        <div className="text-blue-400 font-bold text-xs">1/5 Modules</div>
-                    </div>
-                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full w-1/5 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Choose Your Mastery Plan</h2>
+                    <p className="text-slate-400 text-sm">Select the access duration that fits your goals.</p>
                 </div>
 
                 <div className="space-y-4 mb-12">
                     {[
-                        { id: 1, title: "Foundation", status: "unlocked" },
-                        { id: 2, title: "Finding Profitable Ideas", status: "locked" },
-                        { id: 3, title: "Using AI Tools", status: "locked" },
-                        { id: 4, title: "Building Your Offer", status: "locked" },
-                        { id: 5, title: "Launch Strategy", status: "locked" }
-                    ].map((module) => (
-                        <div key={module.id} className={`p-5 rounded-2xl border flex items-center justify-between transition-all ${module.status === 'unlocked' ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/5 opacity-50'}`}>
+                        { id: 1, title: "3 Months Access", price: "40k", duration: "90 Days", status: "Standard" },
+                        { id: 2, title: "6 Months Access", price: "80k", duration: "180 Days", status: "Best Value" },
+                        { id: 3, title: "1 Year Access", price: "100k", duration: "365 Days", status: "Ultimate" }
+                    ].map((plan) => (
+                        <div key={plan.id} className={`p-5 rounded-2xl border flex items-center justify-between transition-all bg-slate-900/50 border-white/10 hover:border-blue-500 hover:shadow-lg group cursor-pointer`}>
                             <div className="flex items-center gap-4">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${module.status === 'unlocked' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-white/20'}`}>
-                                    {module.status === 'unlocked' ? <Play className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-blue-500/10 text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-colors`}>
+                                    <ShieldCheck className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Module 0{module.id}</p>
-                                    <h4 className="font-bold text-white text-sm">{module.title}</h4>
+                                    <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{plan.status}</p>
+                                    <h4 className="font-bold text-white text-base">{plan.title}</h4>
+                                    <p className="text-xs text-slate-400">{plan.duration}</p>
                                 </div>
                             </div>
-                            {module.status === 'unlocked' && <ChevronRight className="w-5 h-5 text-white/20" />}
+                            <div className="text-right">
+                                <p className="text-xl font-black text-white">{plan.price}</p>
+                                <p className="text-[10px] text-slate-500 uppercase font-bold">One-time</p>
+                            </div>
                         </div>
                     ))}
                 </div>
 
                 <GlowButton onClick={onNext}>
-                    Continue
+                    Select Plan & Continue
+                </GlowButton>
+            </div>
+        );
+
+        const PaymentPage = ({ onNext }) => {
+            const [formData, setFormData] = useState({ card: '', expiry: '', cvc: '' });
+            const isFilled = formData.card.trim() !== '' && formData.expiry.trim() !== '' && formData.cvc.trim() !== '';
+
+            return (
+                <div className="min-h-screen p-6 max-w-lg mx-auto">
+                    <div className="mb-10 text-center">
+                        <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                            <CreditCard className="w-8 h-8 text-blue-500" />
+                        </div>
+                        <h2 className="text-3xl font-display font-bold text-white mb-2">Secure Payment</h2>
+                        <p className="text-slate-400 text-sm">Complete your enrollment to get instant access.</p>
+                    </div>
+
+                    <div className="bg-slate-900/50 border border-white/5 rounded-3xl p-6 mb-8">
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Card Information</label>
+                                <div className="relative">
+                                    <CreditCard className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Card Number" 
+                                        value={formData.card}
+                                        onChange={(e) => setFormData({...formData, card: e.target.value})}
+                                        className="w-full bg-slate-950 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500" 
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expiry</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="MM/YY" 
+                                        value={formData.expiry}
+                                        onChange={(e) => setFormData({...formData, expiry: e.target.value})}
+                                        className="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500" 
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">CVC</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="123" 
+                                        value={formData.cvc}
+                                        onChange={(e) => setFormData({...formData, cvc: e.target.value})}
+                                        className="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500" 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 mb-8">
+                        <ShieldCheck className="w-6 h-6 text-blue-500 shrink-0" />
+                        <p className="text-[10px] text-slate-400 leading-tight">Your payment is secured with 256-bit encryption. We never store your card details.</p>
+                    </div>
+
+                    <GlowButton onClick={onNext} disabled={!isFilled}>
+                        Complete Enrollment
+                    </GlowButton>
+                    
+                    <p className="text-center text-[10px] text-slate-500 mt-6 font-bold uppercase tracking-widest">
+                        Trusted by 5,000+ Students Worldwide
+                    </p>
+                </div>
+            );
+        };
+
+        const PaymentSuccessPage = ({ onNext }) => (
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 max-w-lg mx-auto text-center">
+                <motion.div 
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mb-8 border border-green-500/20 shadow-[0_0_30px_rgba(34,197,94,0.2)]"
+                >
+                    <CheckCircle2 className="w-12 h-12 text-green-500" />
+                </motion.div>
+                <h2 className="text-4xl font-display font-bold text-white mb-4">Payment Successful!</h2>
+                <p className="text-slate-400 text-lg mb-10 leading-relaxed">
+                    Welcome to the inner circle. Your account has been upgraded and your 72-hour mastery journey begins now.
+                </p>
+                <div className="w-full p-6 rounded-3xl bg-slate-900/50 border border-white/5 mb-10">
+                    <div className="flex justify-between items-center mb-4">
+                        <span className="text-slate-500 text-sm">Transaction ID</span>
+                        <span className="text-white font-mono text-sm">#AI-8829-XM</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-slate-500 text-sm">Access Level</span>
+                        <span className="text-blue-500 font-bold text-sm">LIFETIME MASTERY</span>
+                    </div>
+                </div>
+                <GlowButton onClick={onNext}>
+                    Enter the Dashboard
+                    <ChevronRight className="w-5 h-5" />
                 </GlowButton>
             </div>
         );
@@ -433,7 +464,7 @@
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.2 }}
-                            className="p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden group"
+                            className="p-8 rounded-3xl bg-slate-900/50 border border-white/5 relative overflow-hidden group"
                         >
                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <p className="text-slate-300 text-lg leading-relaxed italic">"{text}"</p>
@@ -448,39 +479,64 @@
 
         const SocialProofSection = ({ onNext }) => (
             <div className="px-6 py-20 max-w-lg mx-auto">
-                <h2 className="text-3xl font-display font-bold text-white mb-12 text-center">Real Results</h2>
-                <div className="space-y-4">
+                <h2 className="text-3xl font-display font-bold text-white mb-12 text-center">Student Success Stories</h2>
+                <div className="space-y-6">
                     {[
-                        { text: "This is the first thing that actually made sense", icon: <MessageSquare className="w-4 h-4" /> },
-                        { text: "Simple and straight to the point", icon: <Heart className="w-4 h-4 text-rose-500 fill-rose-500" /> },
-                        { text: "I started with just my phone", icon: <Zap className="w-4 h-4 text-blue-400" /> },
-                        { text: "I wish I found this earlier", icon: <Flame className="w-4 h-4 text-orange-500" /> }
-                    ].map((comment, i) => (
+                        { 
+                            name: "Sarah J.", 
+                            role: "Freelance Designer", 
+                            text: "I was skeptical at first, but within 2 weeks of following the 72-hour system, I landed my first high-ticket AI client. This is the real deal.", 
+                            rating: 5 
+                        },
+                        { 
+                            name: "David M.", 
+                            role: "Content Creator", 
+                            text: "The modules on finding profitable ideas changed everything for me. I'm now automating 80% of my workflow and earning more than ever.", 
+                            rating: 5 
+                        },
+                        { 
+                            name: "Elena R.", 
+                            role: "Small Business Owner", 
+                            text: "Finally, a course that doesn't just talk about theory. It's pure action. I launched my AI service using just my phone as promised.", 
+                            rating: 5 
+                        },
+                        { 
+                            name: "Marcus T.", 
+                            role: "Tech Enthusiast", 
+                            text: "The community and support are incredible. If you're looking for a shortcut to AI mastery, this is it. Worth every penny.", 
+                            rating: 5 
+                        }
+                    ].map((testimonial, i) => (
                         <motion.div 
                             key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-2xl flex items-start gap-4"
+                            className="bg-slate-900/50 border border-white/5 p-6 rounded-3xl relative overflow-hidden group"
                         >
-                            <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
-                                <User className="w-5 h-5 text-indigo-400" />
+                            <div className="absolute top-0 right-0 p-4 opacity-5">
+                                <MessageSquare className="w-12 h-12 text-blue-600" />
                             </div>
-                            <div className="flex-1">
-                                <p className="text-sm text-white/90 font-medium leading-relaxed">"{comment.text}"</p>
-                                <div className="flex items-center gap-4 mt-3">
-                                    <div className="flex items-center gap-1 text-[10px] text-slate-500 font-bold">
-                                        {comment.icon}
-                                        <span>LIKE</span>
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 font-bold">REPLY</div>
+                            <div className="flex items-center gap-1 mb-4">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                    <Star key={i} className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                                ))}
+                            </div>
+                            <p className="text-slate-400 text-sm leading-relaxed mb-6 italic">"{testimonial.text}"</p>
+                            <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                                    {testimonial.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold text-sm">{testimonial.name}</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{testimonial.role}</p>
                                 </div>
                             </div>
                         </motion.div>
                     ))}
                 </div>
                 <GlowButton onClick={onNext} className="mt-12">
-                    Continue
+                    Continue to Final Step
                 </GlowButton>
             </div>
         );
@@ -488,8 +544,8 @@
         const FinalClose = () => (
             <div className="min-h-screen flex items-center justify-center p-6 text-center max-w-lg mx-auto">
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-                    <div className="w-24 h-24 bg-blue-600/20 rounded-[32px] flex items-center justify-center mx-auto mb-10 border border-blue-500/30 shadow-[0_0_50px_rgba(37,99,235,0.2)]">
-                        <Zap className="w-12 h-12 text-blue-400" />
+                    <div className="w-24 h-24 bg-blue-500/10 rounded-[32px] flex items-center justify-center mx-auto mb-10 border border-blue-500/20 shadow-xl">
+                        <Zap className="w-12 h-12 text-blue-600" />
                     </div>
                     <h1 className="text-4xl font-display font-bold text-white mb-6">The Right Time Is Now</h1>
                     <p className="text-slate-400 text-lg mb-12 leading-relaxed">
@@ -499,7 +555,7 @@
                     <GlowButton onClick={() => window.location.reload()}>
                         Get Started Now
                     </GlowButton>
-                    <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                         <ShieldCheck className="w-4 h-4" />
                         Secure Lifetime Access
                     </div>
@@ -522,27 +578,26 @@
                     case 1: return <ConfirmationPage onNext={() => setStep(2)} />;
                     case 2: return <AuthPage onNext={() => setStep(3)} />;
                     case 3: return <DashboardPreview onNext={() => setStep(4)} />;
-                    case 4: return <ExperienceSection onNext={() => setStep(5)} />;
-                    case 5: return <SocialProofSection onNext={() => setStep(6)} />;
-                    case 6: return <FinalClose />;
+                    case 4: return <PaymentPage onNext={() => setStep(5)} />;
+                    case 5: return <PaymentSuccessPage onNext={() => setStep(6)} />;
+                    case 6: return <ExperienceSection onNext={() => setStep(7)} />;
+                    case 7: return <SocialProofSection onNext={() => setStep(8)} />;
+                    case 8: return <FinalClose />;
                     default: return <LandingPage onNext={() => setStep(1)} />;
                 }
             };
 
             return (
-                <div className="min-h-screen bg-[#050505] text-slate-300 selection:bg-blue-500/30 font-sans overflow-x-hidden">
-                    <div className="fixed inset-0 z-0 pointer-events-none">
-                        <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-blue-600/10 blur-[150px] rounded-full" />
-                        <div className="absolute bottom-[-10%] right-[-10%] w-[80%] h-[80%] bg-purple-600/10 blur-[150px] rounded-full" />
-                    </div>
-
+                <div className="min-h-screen bg-[#0f172a] text-slate-400 selection:bg-blue-500/30 font-sans overflow-x-hidden">
+                    <Header setStep={setStep} />
+                    
                     <main className="relative z-10">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={step}
-                                initial={{ opacity: 0, x: 10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.3 }}
                             >
                                 {renderStep()}
