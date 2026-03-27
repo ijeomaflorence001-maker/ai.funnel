@@ -1,13 +1,536 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>72-Hour AI Mastery Funnel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+        body {
+            background-color: #050505;
+            color: #cbd5e1;
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+        }
+        .font-display { font-family: var(--font-display); }
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
 
+    <!-- Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide-react@latest"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { motion, AnimatePresence } = FramerMotion;
+        const { 
+            Zap, 
+            CheckCircle2, 
+            ArrowRight, 
+            Lock, 
+            User, 
+            Mail, 
+            Play, 
+            LayoutDashboard, 
+            Heart, 
+            MessageSquare, 
+            ShieldCheck,
+            ChevronRight,
+            Clock,
+            Flame,
+            Star,
+            Check
+        } = LucideReact;
+
+        // --- Shared Components ---
+
+        const BookMockup = () => (
+            <div className="relative group mx-auto w-64 h-80 perspective-1000 my-12">
+                <motion.div 
+                    initial={{ rotateY: -20, rotateX: 10 }}
+                    animate={{ rotateY: [-20, -10, -20], rotateX: [10, 15, 10] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative w-full h-full preserve-3d shadow-2xl rounded-r-lg overflow-hidden border border-white/10"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-blue-900 flex flex-col items-center justify-center p-6 text-center">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                        <Zap className="w-12 h-12 text-blue-400 mb-4 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
+                        <h3 className="text-2xl font-display font-black text-white leading-tight tracking-tighter">
+                            72-HOUR AI BUSINESS MASTERY
+                        </h3>
+                        <div className="mt-4 px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold text-blue-300 uppercase tracking-widest">
+                            The Challenge
+                        </div>
+                    </div>
+                    <div className="absolute left-0 top-0 bottom-0 w-4 bg-black/40 border-r border-white/10"></div>
+                </motion.div>
+                <div className="absolute -inset-8 bg-blue-500/20 blur-[100px] rounded-full -z-10"></div>
+                <div className="absolute -inset-8 bg-purple-500/10 blur-[80px] rounded-full -z-10 translate-x-10"></div>
+            </div>
+        );
+
+        const GlowButton = ({ children, onClick, className = "", variant = "primary" }) => {
+            const variants = {
+                primary: "bg-blue-600 text-white shadow-[0_0_30px_rgba(37,99,235,0.4)] hover:bg-blue-500",
+                secondary: "bg-white text-black hover:bg-slate-100",
+                outline: "bg-white/5 border border-white/10 text-white hover:bg-white/10"
+            };
+
+            return (
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onClick}
+                    className={`w-full font-bold py-5 rounded-2xl flex items-center justify-center gap-3 transition-all ${variants[variant]} ${className}`}
+                >
+                    {children}
+                </motion.button>
+            );
+        };
+
+        // --- Funnel Steps ---
+
+        const LandingPage = ({ onNext }) => (
+            <div className="px-6 py-12 max-w-lg mx-auto">
+                <div className="text-center mb-16">
+                    <motion.h2 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-blue-500 font-black tracking-[0.4em] uppercase text-xs mb-6"
+                    >
+                        STOP SCROLLING.
+                    </motion.h2>
+                    <h1 className="text-4xl font-display font-bold text-white leading-tight mb-8">
+                        If you're always busy but still broke… <br/>
+                        <span className="text-white/40">you're not lazy.</span> <br/>
+                        <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">You're using the wrong system.</span>
+                    </h1>
+                    <p className="text-slate-400 text-lg mb-10 leading-relaxed">
+                        I discovered something that changed everything using just my phone.
+                    </p>
+                    <GlowButton onClick={onNext}>
+                        Get Instant Access
+                        <ArrowRight className="w-5 h-5" />
+                    </GlowButton>
+                </div>
+
+                <div className="space-y-8 mb-20 text-center">
+                    <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                        <p className="text-slate-300 leading-relaxed mb-6">
+                            "I was busy every day. Trying different things. Learning… but not earning."
+                        </p>
+                        <p className="text-slate-400 text-sm mb-6">
+                            I thought I was the problem.
+                        </p>
+                        <p className="text-white font-bold">
+                            Until I realized… I was just doing the wrong things.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="mb-20">
+                    <h3 className="text-2xl font-bold text-white mb-8 text-center">You're Not Lazy… You're Stuck in a Loop.</h3>
+                    <div className="space-y-4">
+                        {[
+                            { icon: <Clock className="w-5 h-5 text-red-400" />, text: "You wake up with plans" },
+                            { icon: <Zap className="w-5 h-5 text-red-400" />, text: "Day ends with no results" },
+                            { icon: <MessageSquare className="w-5 h-5 text-red-400" />, text: "Internal doubt: \"Am I the problem?\"" }
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/5">
+                                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+                                    {item.icon}
+                                </div>
+                                <p className="text-slate-300 text-sm">{item.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mb-20 text-center px-4">
+                    <div className="w-px h-12 bg-gradient-to-b from-transparent to-blue-500 mx-auto mb-8"></div>
+                    <p className="text-xl text-white font-medium leading-relaxed italic">
+                        "Hard work is not your problem. Consistency is not your problem. It’s your approach."
+                    </p>
+                    <div className="w-px h-12 bg-gradient-to-t from-transparent to-blue-500 mx-auto mt-8"></div>
+                </div>
+
+                <div className="mb-20">
+                    <div className="space-y-6 text-slate-400 text-center leading-relaxed">
+                        <p>I was doing everything… learning, jumping from one thing to another, buying courses.</p>
+                        <p className="text-white font-bold">Still nothing worked…</p>
+                        <p>Until I found a simple way to turn what I already had into something people would actually pay for.</p>
+                        <p className="text-blue-400 font-bold text-lg">Using just my phone. No laptop. No stress. No confusion.</p>
+                    </div>
+                </div>
+
+                <div className="mb-20 text-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-6">
+                        The Solution
+                    </div>
+                    <h2 className="text-3xl font-display font-bold text-white mb-4">72-Hour AI Business Mastery Challenge</h2>
+                    <p className="text-slate-400">A simple, step-by-step system to go from zero to launch.</p>
+                    
+                    <BookMockup />
+
+                    <div className="space-y-4 text-left max-w-xs mx-auto">
+                        {[
+                            "Turn simple ideas into income",
+                            "Use free AI tools (no stress)",
+                            "Follow a clear step-by-step system",
+                            "Launch using just your phone"
+                        ].map((benefit, i) => (
+                            <div key={i} className="flex items-center gap-3 text-slate-300 text-sm">
+                                <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
+                                {benefit}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mb-20">
+                    <h3 className="text-xl font-bold text-white mb-8 text-center">Who It’s For</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                        {[
+                            "Tired of trying without results",
+                            "Only have a phone",
+                            "Want something simple",
+                            "Ready to take action"
+                        ].map((item, i) => (
+                            <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                <p className="text-slate-400 text-sm">{item}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mb-12 text-center p-8 rounded-3xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-white/10">
+                    <p className="text-white leading-relaxed">
+                        "6 months from now… you’ll either say: <br/>
+                        <span className="text-blue-400 font-bold">‘I’m glad I started’</span> <br/>
+                        or wish you did."
+                    </p>
+                </div>
+
+                <GlowButton onClick={onNext} variant="secondary">
+                    Start Now
+                </GlowButton>
+            </div>
+        );
+
+        const ConfirmationPage = ({ onNext }) => (
+            <div className="px-6 py-20 text-center max-w-lg mx-auto">
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+                    <div className="w-20 h-20 bg-blue-600/20 rounded-3xl flex items-center justify-center mx-auto mb-10 border border-blue-500/30">
+                        <ShieldCheck className="w-10 h-10 text-blue-400" />
+                    </div>
+                    <h1 className="text-3xl font-display font-bold text-white mb-4">You're One Step Away…</h1>
+                    <p className="text-slate-400 mb-12">This is where most people stop… don’t miss this.</p>
+                    
+                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 mb-12">
+                        <p className="text-white font-bold mb-8">Click below to continue and create your access.</p>
+                        <GlowButton onClick={onNext}>
+                            Continue
+                        </GlowButton>
+                    </div>
+
+                    <p className="text-xs text-slate-500 font-medium flex items-center justify-center gap-2">
+                        <Lock className="w-3 h-3" />
+                        Quick setup. Instant access. No complications.
+                    </p>
+                </motion.div>
+            </div>
+        );
+
+        const AuthPage = ({ onNext }) => {
+            const [isLogin, setIsLogin] = useState(false);
+
+            return (
+                <div className="px-6 py-20 max-w-md mx-auto">
+                    <motion.div 
+                        key={isLogin ? 'login' : 'signup'}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                    >
+                        <div className="text-center mb-12">
+                            <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/30">
+                                <User className="w-8 h-8 text-blue-400" />
+                            </div>
+                            <h1 className="text-3xl font-display font-bold text-white mb-2">
+                                {isLogin ? 'Log In' : 'Create Your Account'}
+                            </h1>
+                            <p className="text-slate-500 text-sm">
+                                {isLogin ? 'Welcome back to the challenge.' : 'Secure. No spam. Immediate access after signup.'}
+                            </p>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            {!isLogin && (
+                                <div className="relative">
+                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
+                                    <input type="text" placeholder="Full Name" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white focus:outline-none focus:border-blue-500/50" />
+                                </div>
+                            )}
+                            <div className="relative">
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
+                                <input type="email" placeholder="Email Address" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white focus:outline-none focus:border-blue-500/50" />
+                            </div>
+                            <div className="relative">
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />
+                                <input type="password" placeholder="Password" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-5 py-4 text-white focus:outline-none focus:border-blue-500/50" />
+                            </div>
+                            <GlowButton onClick={onNext} className="mt-4">
+                                {isLogin ? 'Log In' : 'Get Instant Access'}
+                            </GlowButton>
+                            
+                            <div className="text-center mt-8">
+                                <button 
+                                    onClick={() => setIsLogin(!isLogin)}
+                                    className="text-xs text-slate-500"
+                                >
+                                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                                    <span className="text-blue-400 font-bold underline">
+                                        {isLogin ? 'Sign Up' : 'Log In'}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            );
+        };
+
+        const DashboardPreview = ({ onNext }) => (
+            <div className="min-h-screen bg-[#050505] p-6 max-w-lg mx-auto">
+                <div className="flex items-center justify-between mb-10">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <Zap className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="font-bold text-white tracking-tight">AI MASTERY</span>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
+                        <User className="w-5 h-5 text-white/50" />
+                    </div>
+                </div>
+
+                <div className="mb-10">
+                    <h2 className="text-2xl font-bold text-white mb-2">Welcome to AI Business Mastery</h2>
+                    <p className="text-slate-500 text-sm">Your journey to launch starts here.</p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 mb-8">
+                    <div className="flex justify-between items-end mb-4">
+                        <div>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Course Progress</p>
+                            <h3 className="text-2xl font-bold text-white">20% Complete</h3>
+                        </div>
+                        <div className="text-blue-400 font-bold text-xs">1/5 Modules</div>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full w-1/5 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                    </div>
+                </div>
+
+                <div className="space-y-4 mb-12">
+                    {[
+                        { id: 1, title: "Foundation", status: "unlocked" },
+                        { id: 2, title: "Finding Profitable Ideas", status: "locked" },
+                        { id: 3, title: "Using AI Tools", status: "locked" },
+                        { id: 4, title: "Building Your Offer", status: "locked" },
+                        { id: 5, title: "Launch Strategy", status: "locked" }
+                    ].map((module) => (
+                        <div key={module.id} className={`p-5 rounded-2xl border flex items-center justify-between transition-all ${module.status === 'unlocked' ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/5 opacity-50'}`}>
+                            <div className="flex items-center gap-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${module.status === 'unlocked' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-white/20'}`}>
+                                    {module.status === 'unlocked' ? <Play className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Module 0{module.id}</p>
+                                    <h4 className="font-bold text-white text-sm">{module.title}</h4>
+                                </div>
+                            </div>
+                            {module.status === 'unlocked' && <ChevronRight className="w-5 h-5 text-white/20" />}
+                        </div>
+                    ))}
+                </div>
+
+                <GlowButton onClick={onNext}>
+                    Continue
+                </GlowButton>
+            </div>
+        );
+
+        const ExperienceSection = ({ onNext }) => (
+            <div className="px-6 py-20 max-w-lg mx-auto">
+                <h2 className="text-3xl font-display font-bold text-white mb-12 text-center">This Is Where Things Change</h2>
+                <div className="space-y-6">
+                    {[
+                        "I used to think I needed more knowledge… but I needed the right system.",
+                        "I stopped overthinking… and started doing.",
+                        "It finally made sense."
+                    ].map((text, i) => (
+                        <motion.div 
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.2 }}
+                            className="p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden group"
+                        >
+                            <div className="absolute top-0 left-0 w-1 h-full bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <p className="text-slate-300 text-lg leading-relaxed italic">"{text}"</p>
+                        </motion.div>
+                    ))}
+                </div>
+                <GlowButton onClick={onNext} className="mt-12" variant="outline">
+                    Next
+                </GlowButton>
+            </div>
+        );
+
+        const SocialProofSection = ({ onNext }) => (
+            <div className="px-6 py-20 max-w-lg mx-auto">
+                <h2 className="text-3xl font-display font-bold text-white mb-12 text-center">Real Results</h2>
+                <div className="space-y-4">
+                    {[
+                        { text: "This is the first thing that actually made sense", icon: <MessageSquare className="w-4 h-4" /> },
+                        { text: "Simple and straight to the point", icon: <Heart className="w-4 h-4 text-rose-500 fill-rose-500" /> },
+                        { text: "I started with just my phone", icon: <Zap className="w-4 h-4 text-blue-400" /> },
+                        { text: "I wish I found this earlier", icon: <Flame className="w-4 h-4 text-orange-500" /> }
+                    ].map((comment, i) => (
+                        <motion.div 
+                            key={i}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-2xl flex items-start gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                <User className="w-5 h-5 text-indigo-400" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm text-white/90 font-medium leading-relaxed">"{comment.text}"</p>
+                                <div className="flex items-center gap-4 mt-3">
+                                    <div className="flex items-center gap-1 text-[10px] text-slate-500 font-bold">
+                                        {comment.icon}
+                                        <span>LIKE</span>
+                                    </div>
+                                    <div className="text-[10px] text-slate-500 font-bold">REPLY</div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+                <GlowButton onClick={onNext} className="mt-12">
+                    Continue
+                </GlowButton>
+            </div>
+        );
+
+        const FinalClose = () => (
+            <div className="min-h-screen flex items-center justify-center p-6 text-center max-w-lg mx-auto">
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+                    <div className="w-24 h-24 bg-blue-600/20 rounded-[32px] flex items-center justify-center mx-auto mb-10 border border-blue-500/30 shadow-[0_0_50px_rgba(37,99,235,0.2)]">
+                        <Zap className="w-12 h-12 text-blue-400" />
+                    </div>
+                    <h1 className="text-4xl font-display font-bold text-white mb-6">The Right Time Is Now</h1>
+                    <p className="text-slate-400 text-lg mb-12 leading-relaxed">
+                        Nothing changes unless you do. <br/>
+                        This is your moment to start.
+                    </p>
+                    <GlowButton onClick={() => window.location.reload()}>
+                        Get Started Now
+                    </GlowButton>
+                    <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                        <ShieldCheck className="w-4 h-4" />
+                        Secure Lifetime Access
+                    </div>
+                </motion.div>
+            </div>
+        );
+
+        // --- Main App ---
+
+        function App() {
+            const [step, setStep] = useState(0);
+
+            useEffect(() => {
+                window.scrollTo(0, 0);
+            }, [step]);
+
+            const renderStep = () => {
+                switch (step) {
+                    case 0: return <LandingPage onNext={() => setStep(1)} />;
+                    case 1: return <ConfirmationPage onNext={() => setStep(2)} />;
+                    case 2: return <AuthPage onNext={() => setStep(3)} />;
+                    case 3: return <DashboardPreview onNext={() => setStep(4)} />;
+                    case 4: return <ExperienceSection onNext={() => setStep(5)} />;
+                    case 5: return <SocialProofSection onNext={() => setStep(6)} />;
+                    case 6: return <FinalClose />;
+                    default: return <LandingPage onNext={() => setStep(1)} />;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-[#050505] text-slate-300 selection:bg-blue-500/30 font-sans overflow-x-hidden">
+                    <div className="fixed inset-0 z-0 pointer-events-none">
+                        <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-blue-600/10 blur-[150px] rounded-full" />
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[80%] h-[80%] bg-purple-600/10 blur-[150px] rounded-full" />
+                    </div>
+
+                    <main className="relative z-10">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={step}
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {renderStep()}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
