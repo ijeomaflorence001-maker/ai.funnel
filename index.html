@@ -97,34 +97,94 @@
             Flame = createFallbackIcon('Flame'), 
             Star = createFallbackIcon('Star'), 
             Check = createFallbackIcon('Check'),
-            CreditCard = createFallbackIcon('CreditCard')
+            CreditCard = createFallbackIcon('CreditCard'),
+            Menu = createFallbackIcon('Menu'),
+            X = createFallbackIcon('X')
         } = LucideGlobal;
 
         // --- Shared Components ---
 
-        const Header = ({ setStep }) => (
-            <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10 shadow-xl">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setStep(0)}>
-                            <Zap className="w-6 h-6 text-blue-500" />
-                            <span className="font-display font-bold text-white text-xl tracking-tight">AI MASTERY</span>
-                        </div>
-                        <nav className="hidden md:flex items-center space-x-8">
-                            <button onClick={() => setStep(0)} className="text-white/70 hover:text-white font-medium transition-colors">Home</button>
-                            <button onClick={() => setStep(6)} className="text-white/70 hover:text-white font-medium transition-colors">Learn More</button>
-                            <button onClick={() => setStep(3)} className="text-white/70 hover:text-white font-medium transition-colors">Get Prices</button>
-                            <button onClick={() => setStep(2)} className="bg-blue-600 text-white px-5 py-2 rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20">Sign Up</button>
-                        </nav>
-                        <div className="md:hidden">
-                            <button className="text-white p-2">
-                                <LayoutDashboard className="w-6 h-6" />
-                            </button>
+        const Header = ({ setStep }) => {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+            const navLinks = [
+                { label: 'Home', step: 0 },
+                { label: 'Learn More', step: 6 },
+                { label: 'Get Prices', step: 3 },
+            ];
+
+            return (
+                <header className="sticky top-0 z-50 bg-blue-900/90 backdrop-blur-md border-b border-white/10 shadow-xl">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-16">
+                            <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setStep(0); setIsMenuOpen(false); }}>
+                                <Zap className="w-6 h-6 text-blue-400" />
+                                <span className="font-display font-bold text-white text-xl tracking-tight">AI MASTERY</span>
+                            </div>
+                            
+                            {/* Desktop Nav */}
+                            <nav className="hidden md:flex items-center space-x-8">
+                                {navLinks.map((link) => (
+                                    <button 
+                                        key={link.label}
+                                        onClick={() => setStep(link.step)} 
+                                        className="text-white/80 hover:text-white font-medium transition-colors"
+                                    >
+                                        {link.label}
+                                    </button>
+                                ))}
+                                <button 
+                                    onClick={() => setStep(2)} 
+                                    className="bg-blue-500 text-white px-5 py-2 rounded-full font-bold hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
+                                >
+                                    Sign Up
+                                </button>
+                            </nav>
+
+                            {/* Mobile Menu Toggle */}
+                            <div className="md:hidden">
+                                <button 
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    className="text-white p-2 focus:outline-none"
+                                >
+                                    {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </header>
-        );
+
+                    {/* Mobile Nav Menu */}
+                    <AnimatePresence>
+                        {isMenuOpen && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="md:hidden bg-blue-950/95 border-b border-white/10 overflow-hidden"
+                            >
+                                <div className="px-4 pt-2 pb-6 space-y-2">
+                                    {navLinks.map((link) => (
+                                        <button 
+                                            key={link.label}
+                                            onClick={() => { setStep(link.step); setIsMenuOpen(false); }} 
+                                            className="block w-full text-left px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 rounded-lg font-medium transition-all"
+                                        >
+                                            {link.label}
+                                        </button>
+                                    ))}
+                                    <button 
+                                        onClick={() => { setStep(2); setIsMenuOpen(false); }} 
+                                        className="block w-full text-center mt-4 bg-blue-500 text-white px-5 py-3 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
+                                    >
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </header>
+            );
+        };
 
         const BookMockup = () => (
             <div className="relative group mx-auto w-64 h-80 perspective-1000 my-12">
@@ -173,40 +233,251 @@
         // --- Funnel Steps ---
 
         const LandingPage = ({ onNext }) => (
-            <div className="min-h-screen flex flex-col items-center justify-center p-6 max-w-lg mx-auto">
-                <div className="text-center mb-12">
-                    <div className="inline-block px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-8">
-                        The 72-Hour Challenge
+            <div className="min-h-screen bg-[#0f172a]">
+                {/* Hero Section */}
+                <div className="min-h-screen flex flex-col items-center justify-center p-6 max-w-lg mx-auto">
+                    <div className="text-center mb-12">
+                        <div className="inline-block px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-8">
+                            The 72-Hour Challenge
+                        </div>
+                        <h1 className="text-5xl font-display font-black text-white mb-6 leading-[0.9] tracking-tighter">
+                            I BUILT A BUSINESS <br/>
+                            <span className="text-blue-500">IN 3 DAYS.</span>
+                        </h1>
+                        <p className="text-slate-400 text-lg mb-10 leading-relaxed">
+                            I discovered something that changed everything using just my phone.
+                        </p>
                     </div>
-                    <h1 className="text-5xl font-display font-black text-white mb-6 leading-[0.9] tracking-tighter">
-                        I BUILT A BUSINESS <br/>
-                        <span className="text-blue-500">IN 3 DAYS.</span>
-                    </h1>
-                    <p className="text-slate-400 text-lg mb-10 leading-relaxed">
-                        I discovered something that changed everything using just my phone.
-                    </p>
+
+                    <BookMockup />
+
+                    <div className="space-y-8 mb-20 text-center">
+                        <div className="flex items-center justify-center gap-12">
+                            <div>
+                                <p className="text-3xl font-black text-white">5k+</p>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Students</p>
+                            </div>
+                            <div className="w-px h-10 bg-white/10"></div>
+                            <div>
+                                <p className="text-3xl font-black text-white">72h</p>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <GlowButton onClick={() => window.location.href = 'https://wa.link/uz3629'}>
+                        Get started now
+                        <ArrowRight className="w-5 h-5" />
+                    </GlowButton>
+                    
+                    <div className="mt-12 animate-bounce">
+                        <ChevronRight className="w-6 h-6 text-slate-600 rotate-90" />
+                    </div>
                 </div>
 
-                <BookMockup />
+                {/* Narrative Sections */}
+                <div className="max-w-lg mx-auto px-6 pb-24 space-y-24">
+                    {/* Curiosity Hooks */}
+                    <div className="space-y-8">
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="p-6 rounded-2xl bg-slate-900/50 border-l-4 border-blue-500 space-y-3"
+                        >
+                            <p className="text-white font-bold">STOP SCROLLING.</p>
+                            <p className="text-slate-300">If you're always busy but still broke… you're not lazy. You're using the wrong system.</p>
+                            <p className="text-blue-400 text-sm font-bold">I just discovered something that changed everything for me using just my phone.</p>
+                        </motion.div>
 
-                <div className="space-y-8 mb-20 text-center">
-                    <div className="flex items-center justify-center gap-12">
-                        <div>
-                            <p className="text-3xl font-black text-white">5k+</p>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Students</p>
-                        </div>
-                        <div className="w-px h-10 bg-white/10"></div>
-                        <div>
-                            <p className="text-3xl font-black text-white">72h</p>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System</p>
-                        </div>
+                        <motion.div 
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="p-6 rounded-2xl bg-slate-900/50 border-r-4 border-blue-500 text-right space-y-3"
+                        >
+                            <p className="text-white font-bold">I was busy every day.</p>
+                            <p className="text-slate-300">Trying different things. Learning… but not earning. I thought I was the problem.</p>
+                            <p className="text-blue-400 text-sm font-bold">Until I realized… I was just doing the wrong things.</p>
+                        </motion.div>
                     </div>
-                </div>
 
-                <GlowButton onClick={() => window.location.href = 'https://wa.link/uz3629'}>
-                    Get started now
-                    <ArrowRight className="w-5 h-5" />
-                </GlowButton>
+                    {/* The Hook */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="space-y-6"
+                    >
+                        <h2 className="text-3xl font-display font-black text-white leading-tight">
+                            STOP SCROLLING.
+                        </h2>
+                        <p className="text-xl text-slate-300 leading-relaxed">
+                            You’re Not Lazy… You’re Just <span className="text-blue-500">Stuck in a circle.</span>
+                        </p>
+                        <div className="p-6 rounded-3xl bg-slate-900/50 border border-white/5 space-y-4">
+                            <p>You wake up every day with plans.</p>
+                            <p>You say to yourself: <span className="text-blue-400">“Today will be different.”</span></p>
+                            <p>But somehow… Night comes again, and nothing really changed.</p>
+                            <p>You were busy. But results? <span className="font-bold text-white">Nothing.</span></p>
+                            <p className="text-sm text-slate-500 italic">And the scary part… you cant figure it out.</p>
+                        </div>
+                    </motion.div>
+
+                    {/* Internal Conflict */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="space-y-6"
+                    >
+                        <div className="flex items-center gap-3 text-blue-500">
+                            <MessageSquare className="w-6 h-6" />
+                            <span className="font-bold uppercase tracking-widest text-xs">Internal Conflict</span>
+                        </div>
+                        <p className="text-2xl font-display font-bold text-white italic">
+                            “Am I the problem?”
+                        </p>
+                        <p className="text-slate-400">
+                            Because you see others making money online… and you're still stuck in the same place.
+                        </p>
+                    </motion.div>
+
+                    {/* Hidden Truth */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="p-8 rounded-[2rem] bg-blue-600 text-white space-y-6 shadow-2xl shadow-blue-500/20"
+                    >
+                        <h3 className="text-2xl font-display font-black uppercase tracking-tight">The Hidden Truth</h3>
+                        <div className="space-y-4">
+                            <div className="flex gap-3">
+                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">👉</div>
+                                <p className="font-bold">Hard work is not your problem.</p>
+                            </div>
+                            <div className="flex gap-3">
+                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">👉</div>
+                                <p className="font-bold">Even consistency is not your problem.</p>
+                            </div>
+                        </div>
+                        <p className="text-blue-100 italic">
+                            It maybe ur approach. You’ve been using the wrong method all along.
+                        </p>
+                    </motion.div>
+
+                    {/* My Story */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="space-y-6"
+                    >
+                        <div className="flex items-center gap-3 text-yellow-500">
+                            <Zap className="w-6 h-6" />
+                            <span className="font-bold uppercase tracking-widest text-xs">I was once like you</span>
+                        </div>
+                        <p className="text-lg leading-relaxed">
+                            I didn’t realize this early. I was doing everything: learning, jumping from one thing to another, buying courses... Still nothing worked.
+                        </p>
+                        <p className="text-xl text-white font-bold">
+                            Until I found a simple way to turn what I already had into something people would actually pay for.
+                        </p>
+                        <div className="grid grid-cols-2 gap-4">
+                            {['No Laptop', 'No Stress', 'No Confusion', 'Just My Phone'].map((item, i) => (
+                                <div key={i} className="flex items-center gap-2 text-sm font-bold text-slate-300">
+                                    <Check className="w-4 h-4 text-blue-500" />
+                                    {item}
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Soft Intro */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center space-y-6"
+                    >
+                        <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                            <Flame className="w-8 h-8 text-blue-500" />
+                        </div>
+                        <h3 className="text-2xl font-display font-bold text-white">72-Hour AI Business Mastery</h3>
+                        <p className="text-slate-400 leading-relaxed">
+                            Not theory. Not motivation. But a clear path you can follow… even if you’re starting from zero.
+                        </p>
+                    </motion.div>
+
+                    {/* Benefits */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="space-y-8"
+                    >
+                        <div className="text-center">
+                            <h3 className="text-3xl font-display font-black text-white mb-2">BENEFITS</h3>
+                            <p className="text-blue-500 font-bold text-sm uppercase tracking-widest">What's Inside</p>
+                        </div>
+                        <div className="space-y-4">
+                            {[
+                                "Turn a simple idea into something valuable",
+                                "Use free AI tools (no tech headache)",
+                                "Put it together step-by-step",
+                                "And actually launch it"
+                            ].map((benefit, i) => (
+                                <div key={i} className="flex items-start gap-4 p-5 rounded-2xl bg-slate-900/50 border border-white/5">
+                                    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center shrink-0 mt-1">
+                                        <Check className="w-4 h-4 text-white" />
+                                    </div>
+                                    <span className="text-slate-200 font-medium">{benefit}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Who it's for */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="space-y-8"
+                    >
+                        <h3 className="text-2xl font-display font-bold text-white text-center">🎯 WHO IT’S FOR</h3>
+                        <div className="space-y-4">
+                            {[
+                                "You’re tired of trying and not seeing results",
+                                "You only have your phone",
+                                "You want something simple that actually works",
+                                "You’re ready to stop overthinking and start doing"
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-center gap-4 text-slate-400 p-4 rounded-xl bg-white/5">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    <span className="text-sm">{item}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Final CTA */}
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="text-center space-y-8"
+                    >
+                        <div className="space-y-4">
+                            <p className="text-xl font-display font-bold text-white italic">⏳ Time waits for no one</p>
+                            <p className="text-slate-300">The right time to start is now. Nothing changes by itself.</p>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">6 months from now, where will you be?</p>
+                        </div>
+                        <GlowButton onClick={() => window.location.href = 'https://wa.link/uz3629'}>
+                            Get started now
+                            <ArrowRight className="w-5 h-5" />
+                        </GlowButton>
+                    </motion.div>
+                </div>
             </div>
         );
 
