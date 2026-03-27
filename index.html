@@ -46,34 +46,58 @@
     <div id="root"></div>
 
     <!-- Dependencies -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/lucide-react@latest"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js" crossorigin></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" crossorigin></script>
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.min.js" crossorigin></script>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
-        const { motion, AnimatePresence } = FramerMotion;
+        
+        // Robust dependency extraction with fallbacks
+        // Framer Motion UMD can be 'Motion' or 'FramerMotion'
+        const MotionGlobal = window.Motion || window.FramerMotion || {};
+        const motion = MotionGlobal.motion || {
+            div: (props) => <div {...props} />,
+            button: (props) => <button {...props} />,
+            h2: (props) => <h2 {...props} />,
+            p: (props) => <p {...props} />,
+            span: (props) => <span {...props} />,
+        };
+        const AnimatePresence = MotionGlobal.AnimatePresence || (({ children }) => <React.Fragment>{children}</React.Fragment>);
+        
+        // Lucide React UMD exports to 'LucideReact'
+        const LucideGlobal = window.LucideReact || {};
+        
+        // Helper to create a fallback icon component
+        const createFallbackIcon = (name) => (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+        );
+
         const { 
-            Zap, 
-            CheckCircle2, 
-            ArrowRight, 
-            Lock, 
-            User, 
-            Mail, 
-            Play, 
-            LayoutDashboard, 
-            Heart, 
-            MessageSquare, 
-            ShieldCheck,
-            ChevronRight,
-            Clock,
-            Flame,
-            Star,
-            Check
-        } = LucideReact;
+            Zap = createFallbackIcon('Zap'), 
+            CheckCircle2 = createFallbackIcon('CheckCircle2'), 
+            ArrowRight = createFallbackIcon('ArrowRight'), 
+            Lock = createFallbackIcon('Lock'), 
+            User = createFallbackIcon('User'), 
+            Mail = createFallbackIcon('Mail'), 
+            Play = createFallbackIcon('Play'), 
+            LayoutDashboard = createFallbackIcon('LayoutDashboard'), 
+            Heart = createFallbackIcon('Heart'), 
+            MessageSquare = createFallbackIcon('MessageSquare'), 
+            ShieldCheck = createFallbackIcon('ShieldCheck'), 
+            ChevronRight = createFallbackIcon('ChevronRight'), 
+            Clock = createFallbackIcon('Clock'), 
+            Flame = createFallbackIcon('Flame'), 
+            Star = createFallbackIcon('Star'), 
+            Check = createFallbackIcon('Check')
+        } = LucideGlobal;
 
         // --- Shared Components ---
 
